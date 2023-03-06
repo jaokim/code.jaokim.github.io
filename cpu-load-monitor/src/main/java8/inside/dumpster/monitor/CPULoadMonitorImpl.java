@@ -5,8 +5,6 @@ package inside.dumpster.monitor;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,7 +24,7 @@ public class CPULoadMonitorImpl implements CPULoadMonitor {
   private final MBeanServer mrBean = ManagementFactory.getPlatformMBeanServer();
 
   /**
-   * Monitors the CPU load every 5 seconds. If the cpuLevelTestewr returns true,
+   * Monitors the CPU load every 5 seconds. If the cpuLevelTester returns true,
    * a JFR recording is dumped.
    * @param cpuLevelTester returns true to dump a JFR recording.
    * @param jfrRecordingDestination supplies a file if a recording should be dumped
@@ -64,10 +62,10 @@ public class CPULoadMonitorImpl implements CPULoadMonitor {
     final String[] signature = {"[Ljava.lang.String;"};
     final ObjectName name = ObjectName.getInstance("com.sun.management:type=DiagnosticCommand");
     final Object[] params = new Object[1];
-    params[0] = new String[]{"name=1", "filename="+jfrFile};
+    params[0] = new String[]{"name=default", "filename="+jfrFile};
     Object res = mrBean.invoke(name, "jfrDump", params, signature);
     if(res != null) { 
-      System.out.println("Dumped JFR recording to: "+jfrFile.getAbsolutePath());
+      System.out.println("Dumped JFR recording to: "+jfrFile.getAbsolutePath()+ " res:" + res);
     } else {
       System.out.println("Result: "+res);
     }
@@ -79,9 +77,9 @@ public class CPULoadMonitorImpl implements CPULoadMonitor {
    * @throws Exception 
    */
   private double getProcessCpuLoad() throws Exception {
-    final ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
+    final ObjectName os    = ObjectName.getInstance("java.lang:type=OperatingSystem");
     // Get wanted attribute; ProcessCpuLoad or SystemCpuLoad
-    final Double cpuLevel = (double)mrBean.getAttribute(name, "ProcessCpuLoad");
+    final Double cpuLevel = (double)mrBean.getAttribute(os, "ProcessCpuLoad");
     return cpuLevel;
   }
 

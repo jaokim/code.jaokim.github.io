@@ -30,6 +30,8 @@ public class DumpJFROnHighCPU {
     } else {
       cpuLevelThreshold = CPU_LEVEL_THRESHOLD;
     }
+    System.out.println("");
+    System.out.println("- CPU Level Monitor -");
     System.out.println("Let the CPU level register a few test-points. When");
     System.out.println("ready, press enter to start a new thread that consumes");
     System.out.println("some CPU. You can alter the CPU level threshold by ");
@@ -83,7 +85,7 @@ public class DumpJFROnHighCPU {
           double res = Math.random();
           if (System.currentTimeMillis() % 100 == 0) {
             res = Math.IEEEremainder(res, Math.random());
-            Thread.sleep((long) Math.floor((1 - res) * 100));
+            Thread.sleep(100);
           }
         }
       } catch (InterruptedException e) {
