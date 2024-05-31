@@ -6,6 +6,7 @@
     <version>1.0</version>
     <packaging>jar</packaging>
     <build>
+		<defaultGoal>package</defaultGoal>
         <!--<sourceDirectory>src/main/java</sourceDirectory>-->
         <sourceDirectory>src/main/java8</sourceDirectory>
         <plugins>
@@ -50,7 +51,7 @@
                     <archive>
                         <manifestEntries>
                             <Multi-Release>true</Multi-Release>
-                            <Main-Class>inside.dumpster.examples.DumpJFROnHighCPU</Main-Class>
+                            <Main-Class>inside.dumpster.monitor.DumpJFROnHighCPU</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>

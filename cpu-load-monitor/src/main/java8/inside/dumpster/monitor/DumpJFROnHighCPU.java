@@ -23,7 +23,7 @@ public class DumpJFROnHighCPU {
   public static final double CPU_LEVEL_THRESHOLD = 0.3;
 
   public static void main(String[] args) throws Exception {
-    final Runnable cpuConsumerThread =new CPUConsumer();
+    final Runnable cpuConsumerThread = new CPUConsumer();
     final double cpuLevelThreshold;
     if (args.length > 0) {
       cpuLevelThreshold = Double.parseDouble(args[0]);
@@ -37,13 +37,16 @@ public class DumpJFROnHighCPU {
     System.out.println("some CPU. You can alter the CPU level threshold by ");
     System.out.println("giving another value as argument.");
     System.out.println("A JFR file will only be dumped once every minute.");
-    System.out.println(String.format("CPU level threshold: %f", cpuLevelThreshold));
     System.out.println("");
+	System.out.println(String.format("CPU level threshold: %f", cpuLevelThreshold));
+    System.out.println("");
+
+	// This starts our CPU level monitor
     CPULoadMonitor cpuLoad = new CPULoadMonitorImpl();
     cpuLoad.monitor(cpuLevel -> cpuLevel > cpuLevelThreshold,
             () -> jfrDumpDestination());
 
-    System.out.println("Press enter to start some CPU consuming threads.");
+    System.out.println("Press enter to start the CPU consuming threads.");
     System.in.read();
     for(int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
       new Thread(cpuConsumerThread).start();
@@ -58,17 +61,18 @@ public class DumpJFROnHighCPU {
   private static Date lastJFRDump = new Date();
 
   /**
-   * Returns an optional file to dump the JFR recording.
+   * Get the file to dump JFR recording to. If the optional 
+   * is empty, a JFR recording has already been dumped in the 
+   * last DUMPINTERVAL_SECONDS.
    *
-   * @return
+   * @return the file to dump recording to, unless empty. 
    */
   private synchronized static Optional<File> jfrDumpDestination() {
     final Date now = new Date();
     if (now.after(lastJFRDump)) {
-      final String tmpdir = System.getProperty("java.io.tmpdir");
       final String filename = new SimpleDateFormat("yyyyMMddHHmm").format(now);
       lastJFRDump = new Date(now.getTime() + (DUMPINTERVAL_SECONDS * 1000));
-      final File jfrFile = new File(tmpdir, filename + ".jfr");
+      final File jfrFile = new File(filename + ".jfr");
       return Optional.of(jfrFile);
     } else {
       return Optional.empty();
@@ -76,7 +80,6 @@ public class DumpJFROnHighCPU {
   }
 
   private static class CPUConsumer implements Runnable {
-
     @Override
     public void run() {
       try {
@@ -85,7 +88,7 @@ public class DumpJFROnHighCPU {
           double res = Math.random();
           if (System.currentTimeMillis() % 100 == 0) {
             res = Math.IEEEremainder(res, Math.random());
-            Thread.sleep(100);
+            Thread.sleep(10);
           }
         }
       } catch (InterruptedException e) {

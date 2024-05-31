@@ -5,6 +5,7 @@ package inside.dumpster.monitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.function.DoublePredicate;
@@ -33,17 +34,15 @@ public class CPULoadMonitorImpl implements CPULoadMonitor {
   @Override
   public void monitor(DoublePredicate cpuLevelTester, Supplier<Optional<File>> jfrRecordingDestination) throws Exception {
     System.out.println("Adding JDK17 type CPU level monitor");
-    final Configuration c = Configuration.getConfiguration("default");
-    new Thread( () -> {
-      // create a recording stream using the "default" JFC configuration
+	new Thread( () -> {
+    
       try (RecordingStream stream = new RecordingStream()) {
         stream.enable("jdk.CPULoad").withPeriod(Duration.ofSeconds(1));
-        stream.onEvent(e -> {System.out.println("Event: "+e.getEventType().getName());});
         stream.onEvent("jdk.CPULoad", (event) -> {
           // get CPU measurement: "jvmSystem", "jvmUser" or "machineTotal"
           float cpuLoad = event.getFloat("machineTotal");
 
-          if(cpuLevelTester.test(cpuLoad)) {
+          if (cpuLevelTester.test(cpuLoad)) {
             System.out.println(String.format("High CPU level noticed: %.3f", cpuLoad));
             Optional<File> jfrFileDestination = jfrRecordingDestination.get();
             jfrFileDestination.ifPresent((file -> {

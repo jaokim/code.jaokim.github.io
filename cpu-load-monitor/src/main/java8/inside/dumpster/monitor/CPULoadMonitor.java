@@ -9,7 +9,7 @@ import java.util.function.DoublePredicate;
 import java.util.function.Supplier;
 
 /**
- * 
+ * Interface for a CPULoadMonitor. 
  * @author Joakim Nordstrom joakim.nordstrom@oracle.com
  */
 public interface CPULoadMonitor {
@@ -17,13 +17,14 @@ public interface CPULoadMonitor {
     SystemLoad, 
     ProcessLoad
   }
+
   /**
    * Add a CPU level monitor
-   * @param cpuLevelTester returns true to dump a JFR recording.
+   * @param cpuLevelTester that should return true if the CPU level is 
+   * above the threshold.
    * @param jfrRecordingDestination supplies a file if a recording should be 
-   * dumped. Should be used to limit the number of files created.
+   * dumped. Used to limit the number of files created.
    * @throws Exception 
    */
-  
   void monitor(DoublePredicate cpuLevelTester, Supplier<Optional<File>> jfrRecordingDestination) throws Exception;
 }

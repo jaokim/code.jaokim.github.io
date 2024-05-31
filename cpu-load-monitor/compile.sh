@@ -14,4 +14,5 @@ else
   jar --create --file cpuloadmonitor.jar --main-class inside.dumpster.monitor.DumpJFROnHighCPU -C classes . --release 17 -C classes-17 .
 fi
 
-
+echo To test the CPU load monitor, you can run:
+echo java -jar cpuloadmonitor.jar 
